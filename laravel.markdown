@@ -18,6 +18,7 @@ return view('pages/about') 或者简单方法 return view('pages.about')
 
 **向视图中传送数据**
 1. 
+{% highlight php linenos %}
 ```
 $name='abc';
 return view('page.about')->with('name',$name);
