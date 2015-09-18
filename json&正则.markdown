@@ -98,8 +98,11 @@ age:[function aa(){return abc;}]
 JSON.stringify(str);  //结果为："{"name":"jmy","age":[null]}"
 ```
 
-2. 可以有第二个参数，可以是函数或者数组，如果是函数，每一组名称/值对都会调用此函数，与JSON.parse()类似
-```
+2. 可以有第二个参数，可以是函数或者数组，
+
+- 如果是函数，每一组名称/值对都会调用此函数，与JSON.parse()类似
+``` 
+{% highlight javascript linenos %}
 var obj = {
     name: "jmy",
     age: 26
@@ -118,6 +121,33 @@ function fun(name, value){
 // age:26
 ```
 
+- 如果是数组，则只有数组中存在的名称才能被转换，且转换后的顺序与数组中值保持一致
+```
+var obj = { a: 1, b: 2, c: 3, d: 4 };
+
+var json = JSON.stringify(obj, ["c","b","a"]);
+
+console.log(json);
+
+//输出：
+//{"c":3,"b":2,"a":1}
+```
+
+- JSON.stringify()第三个参数space是用于排版的
+```
+var obj = { a: 1, b: 2, c: 3, d: 4 };
+
+var json = JSON.stringify(obj, ["c","b","a"], "\t");
+
+console.log(json);
+
+//输出：
+//{
+//  "c": 3,
+//  "b": 2,
+//  "a": 1
+//}
+```
 
 ## 正则表达式
 $pattern  正则表达式
