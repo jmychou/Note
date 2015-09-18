@@ -4,6 +4,121 @@
 - 并列数据集合（数组）用 [] 表示
 - 映射的集合（对象）用{} 表示。
 
+1. JSON语法规则
+- 数组(Array)用方括号[] 表示。
+- 对象(Object)用大括号{}表示。
+- 名称/值对 (name/value) 组合成数组和对象 
+1. 名称（name）置于双引号中，值（value）可以是字符串、数值、布尔值、null、对象和数组。 不能是undefined，和函数
+2. 字符串不能用单引号，数值不能用八进制或者十六进制
+
+
+- 并列数据用逗号（，）分割,最后一个名称/值对 不要用逗号。
+
+##JS中解析JSON
+- JSON.stringify 用于将JavaScript对象转换成JSON字符串
+- JSON.parse  用于将JSON字符串转换为JavaScript对象
+```
+var str = '{"name": "jmy","age": 26,"friends":["Lucy","Lily","Gwen"]}';
+
+var obj = JSON.parse(str);  //返回一个 JavaScript 对象
+
+console.log(obj);    //Object {name: "jmy", age: 26, friends: Array[3]}
+
+var jsonstr = JSON.stringify(obj);  //返回一个 JSON 字符串
+
+console.log(jsonstr);    //"{"name":"Geoff Lui","age":26,"friends":["Lucy","Lily","Gwen"]}"
+```
+
+##JavaScript中解析字符串主要有三种方式
+1. 使用eval()  //不推荐使用
+eval()函数的参数是一个字符串，其作用是直接执行其中的JS代码
+```
+var str="console.log('hello')";
+eval(str);   //hello
+```
+
+- eval解析JSON
+```
+var str='{"name":"jmy","age":20}';
+eval("("+str+")");    //输出解析后的对象  Object {name: "jmy", age: 20}
+```
+
+- eval()中在字符串两旁加了括号，否则会报错，因为JSON字符串是被{}包围的，直接放到eval中会被当做语句块
+执行，因此要加上括号，使其变成表达式。
+```
+eval("{}");   //输出undefined
+eval("({})");   //输出Object{}
+```
+
+2. 使用JSON.parse()
+- JSON.parse()可以有第二个参数，是一个函数，此函数有两个参数，name和value,分别表示名称和值。当传入一个
+JSON字符串后，JSON的每一组名称/值对都有调用此函数。该函数有返回值，返回值将赋值给当前的name
+```
+var str='{"name":"jmy","age":20}';
+function fun(name,value){ 
+console.log(name+" "+value);
+return value;
+}
+JSON.parse(str,fun)
+
+##输出
+//name  jmy
+// age  20
+// [object Object]
+第一、二行输出分别是 str 的两个名称/值对。第三行输出是 JSON 最外层的对象本身：没有名称，只有值，值是一个对象。
+```
+
+- 这样利用第二个参数，可以在解析JSON字符串的同时对数据做一些处理
+```
+var str = '{"age": 26, "money": 10000}';
+
+var obj = JSON.parse(str,fun);
+
+function fun(name, value){
+    if( name == "age" )
+        value = 14;
+    return value;
+}
+
+console.log(obj); // 输出 Object {age: 14, money: 10000}
+```
+
+
+##JSON序列化--------将JavaScript值（一般是对象或者数组）转换为JSON字符串的过程
+**JSON.stringify()**
+1. 如果要转化的JavaScript数组，存在不符合JSON的语法的值，例如undefined或者function
+则自动忽略，不会输出
+- 如果值是数组，而数组里有函数，则转换为null
+```
+var str={
+name:"jmy",
+age:[function aa(){return abc;}]
+};
+
+JSON.stringify(str);  //结果为："{"name":"jmy","age":[null]}"
+```
+
+2. 可以有第二个参数，可以是函数或者数组，如果是函数，每一组名称/值对都会调用此函数，与JSON.parse()类似
+```
+var obj = {
+    name: "jmy",
+    age: 26
+};
+
+var json = JSON.stringify(obj, fun);
+
+function fun(name, value){
+    console.log(name + ":" + value);
+    return value;
+}
+
+// 输出
+// :[object Object]
+// name:jmy
+// age:26
+```
+
+
 ## 正则表达式
 $pattern  正则表达式
 $subject 匹配的目标数据 数组或字符串
