@@ -101,6 +101,7 @@ JSON.stringify(str);  //结果为："{"name":"jmy","age":[null]}"
 2. 可以有第二个参数，可以是函数或者数组，
 
 - 如果是函数，每一组名称/值对都会调用此函数，与JSON.parse()类似
+
 {% highlight javascript linenos %}
 var obj = {
     name: "jmy",
