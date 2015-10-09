@@ -1,4 +1,54 @@
 #数据类型
+- 根据ECMAScript 5.1的规范，javascript中共有六种数据类型
+Undefined,Null,Boolean,Number,String,Object  前5种属于基本类型，最后一种属于对象类型
+
+- Undefined 类型只有一个值，为undefined，适用于所有数据类型
+没有初始化的变量，函数中缺失的参数，函数没有显示return值时都为undefined
+- Null 类型只有一个值，为null,意味着"空对象(no object)" ,只适用于对象类型
+- Boolean 类型有两个值，true 与 false
+- Number 类型还包括三个特殊的值 NaN,Infinity,-Infinity
+
+**基本类型的string与对象类型的String的区别**
+- 使用字面量方式创建的字符串，为基本类型的string
+-  使用String()创建的字符串，为基本类型的string
+-  使用new String()方式创建的字符串，为object
+```
+str1 = "javascript"
+str2 = String("javascript")
+str3 = new String("javascript")
+> typeof str1
+"string"
+> typeof str2
+"string"
+> typeof str3
+"object"
+```
+
+- javascript会在合适的时候自动把基本类型的string转为对象类型的string，也就是说我们可以对基本类型string使用String.prototype中的方法。这两者也可以进行显式转化。
+```
+// 基本类型----->对象类型
+str1 = "javascript"
+str1 = new String(str1)
+> typeof str1
+"object"
+// 对象类型----->基本类型
+str1 = new String("javascript")
+str1 = str1.valueOf()
+> typeof str1
+"string"
+```
+
+- 这两者用在eval函数中时，结果有所区别：
+```
+var s1="2+2";
+eval(s1);    //4
+
+var s2=new String("2+2");
+eval(s2)   //[String : "2+2"]    返回的还是对象
+```
+
+
+
 1. Number js不区分整数和浮点数，统一用Number表示，特殊的Number类型
 - NaN  //NaN表示Not a Number ，当无法计算结果时用NaN表示
 - Infinity   //Infinity 表示无限大，当数值超过了JavaScript的Number所能表示的最大值时，就表示为Infinity
@@ -29,6 +79,49 @@ false====0 //false
 4. null和undefined
 - null 表示一个空值 undefined表示未定义
 大多数情况用null,undefined仅仅在判断函数参数是否传递时使用
+
+- null和undefined 的比较
+1. typeof
+2. 全等 ===
+```
+undefined==null;     //true
+
+typeof undefined ==typeof null ;   //false  (typeof(undefined); 输出undefined typeof(null);输出objet)
+
+
+undefined === null;    //false
+```
+
+3. 转换为数字
+```
+Number(null);     //0
+
+5+null;    //5
+
+Number(undefined);  //NaN
+
+5+undefined;    //NaN
+```
+
+4. JSON 转换
+```
+>JSON.parse(null);
+null
+
+>JSON.parse(undefined);
+错误
+
+>JSON.stringify(null);
+"null"
+
+>JSON.stringify(undefined);
+
+undefined
+
+```
+
+
+
 
 5. 数组
 1. JavaScript的数组可以包括任意数据类型。例如：
@@ -226,6 +319,7 @@ arr; // []
 ```
 
 5. sort()  sort()可以对当前Array进行排序，它会直接修改当前Array的元素位置,
+如果是字符串，会根据ASCII码进行排序
 此方法会对数组的每一项进行toString(),所以最后得到的数组每一项字符串，所以会有以下结果
 ```
 var arr=[1,2,3,15];
@@ -246,6 +340,28 @@ var arr=[1,2,3,15];
 arr.sort(compare);  #结果为1,2,3,15
 ```
 
+- 默认情况下，对字符串排序，是按照ASCII的大小比较的，现在，我们提出排序应该忽略大小写，按照字母序排序。
+```
+var arr = ['Google', 'apple', 'Microsoft'];
+arr.sort(function (s1,s2){ 
+    x1=s1.toUpperCase();
+    x2=s2.toUpperCase();
+    if(v1<v2){ 
+        return -1;
+    }else if(v1>v2){ 
+        return 1;
+    }else return 0;
+    })   //['apple', 'Google', 'Microsoft']
+```
+
+- sort()方法会直接对Array进行修改，它返回的结果仍是当前Array：
+```
+var a1 = ['B', 'A', 'C'];
+var a2 = a1.sort();
+a1; // ['A', 'B', 'C']
+a2; // ['A', 'B', 'C']
+a1 === a2; // true, a1和a2是同一对象
+```
 
 6. reverse() 反转数组
 
@@ -286,7 +402,7 @@ arr.join('-'); // 'A-B-C-1-2-3'
 
 10. 数组转换为字符串
 
-所有对象都有toLocalString()、toString这2个方法返回以逗号分隔的字符串，它们的原理分别是循环数组，将数组的每一项分别使用toLocalString()、toString()方法后，拼接成字符串。
+所有对象都有toLocalString()、toString这2个方法返回以逗号分隔的字符串，它们的原理分别是循环数组，将数组的每一项分别使用toLocalString()、toString()方法后，拼接成字符串,输出一个新数组。
 如果数组中的一项值是null，或者undefined，使用join()，toLocalString()、toString()方法返回的是以空字符串表示该项。
 
 
@@ -406,6 +522,33 @@ for (var i in a) {
 
 
 #函数  如果没有return语句，函数执行完毕后也会返回结果，只是结果为undefined。
+**函数定义的三种方式**
+1. 函数声明方式
+- 这种方式，会被解析器执行函数声明提升，所以`即使在函数定义前调用该函数也不会报错`
+```
+alert(sum(3,4));   //7
+function sum(x,y){ 
+    return x+y;
+}
+```
+
+2. 函数表达式方式
+- 除了不能定义前调用外，和函数声明一样
+```
+alert(sum(3,4));   //此种方式会报错
+var sum=function (x,y){ 
+    return x+y;
+}
+```
+
+3. 函数对象方法
+- 以对象的方式定义函数，前面参数为函数的参数，最后为函数体，但是会造成解析器两次解析
+一次是普通的ECMAScript代码，一次是解析传入构造函数里的字符串，所以会影响性能，不推荐
+```
+var sum=new Function('x','y','return x+y');
+```
+
+
 - 由于JavaScript的函数也是一个对象，下述定义的abs()函数实际上是一个函数对象，而函数名abs可以视为指向该函数的变量。
 所以下列两种方式等价
 1. 
@@ -522,4 +665,240 @@ function foo() {
         name: 'foo'
     };
 }
+```
+
+## 方法 ---在一个对象的属性中绑定方法
+```
+var xiaoming = {
+    name: '小明',
+    birth: 1990,
+    age: function () {
+        var y = new Date().getFullYear();
+        return y - this.birth;
+    }
+};
+
+xiaoming.age; // function xiaoming.age()
+xiaoming.age(); // 今年调用是25,明年调用就变成26了
+```
+
+- JS 的函数内部如果调用了this,而这个this的指向，视情况而定
+1. 如果以对象的方式调用，比如`xiaoming.age()`,则该函数的this指向被调用的对象，也就是`xiapming`,
+2. 如果单独调用函数，比如`getAge()`,此时this指向全局对象，即 `window`。
+
+```
+function getAge() {
+    var y = new Date().getFullYear();
+    return y - this.birth;
+}
+
+var xiaoming = {
+    name: '小明',
+    birth: 1990,
+    age: getAge
+};
+
+xiaoming.age(); // 25, 正常结果
+getAge(); // NaN
+
+——————————————————————————————————————
+并且如果这么写，
+var tt=xiaoming.age;
+tt();   //得到也是NaN
+```
+
+- 要保证this指向正确，必须用`obj.xxx()`的形式调用。
+
+- 在函数内部重构函，也会才出错
+```
+'use strict';
+
+var xiaoming = {
+    name: '小明',
+    birth: 1990,
+    age: function () {
+        function getAgeFromBirth() {
+            var y = new Date().getFullYear();
+            return y - this.birth;
+        }
+        return getAgeFromBirth();
+    }
+};
+
+xiaoming.age(); // Uncaught TypeError: Cannot read property 'birth' of undefined
+```
+
+- 因为this指针，只在age()方法的函数内指向`xiaoming`,而在函数内部 嵌套定义的函数，this又指向undefined，
+(在非strict模式下，它重新指向全局对象window)
+所以需要先用一个其他的变量捕获this
+```
+'use strict';
+
+var xiaoming = {
+    name: '小明',
+    birth: 1990,
+    age: function () {
+        var that = this; // 在方法内部一开始就捕获this
+        function getAgeFromBirth() {
+            var y = new Date().getFullYear();
+            return y - that.birth; // 用that而不是this
+        }
+        return getAgeFromBirth();
+    }
+};
+
+xiaoming.age(); // 25
+```
+
+##apply()
+- 要指定函数的this指向哪个对象，可以用函数的apply()方法，它接受两个参数，第一个参数就是需要绑定的
+`this`变量，第二个参数是Array,表示函数的本身的参数。上面的例子可以改为
+```
+function getAge() {
+    var y = new Date().getFullYear();
+    return y - this.birth;
+}
+
+var xiaoming = {
+    name: '小明',
+    birth: 1990,
+    age: getAge
+};
+
+xiaoming.age(); // 25
+getAge.apply(xiaoming, []); // 25, this指向xiaoming, 参数为空
+```
+
+##call()
+- call()和apply()类似，区别是
+1. apply()第二参数必须是Array，即把参数打包成Array再传入
+2. call()把参数按顺序传入
+```
+Math.max(3,4,5);     //5
+Math.max.apply(null,[3,4,5]);   //5,如果传入的不是Array就会出错
+Math.max.call(null,3,4,5)   //5; 如果传入的是数组，返回NaN
+
+##普通函数调用，通常把this绑定为null
+```
+
+- 利用apply(),还可以动态改变函数行为
+现在假定我们想统计一下代码一共调用了多少次parseInt()，可以把所有的调用都找出来，然后手动加上
+count += 1，不过这样做太傻了。最佳方案是用我们自己的函数替换掉系统的默认函数parseInt()：
+
+```
+var count = 0;
+var oldParseInt = parseInt; // 保存原函数
+
+//修改系统自带的parseInt
+window.parseInt = function () {
+    count += 1;
+    return oldParseInt.apply(null, arguments); // 调用原函数
+};
+
+// 测试:
+parseInt('10');
+parseInt('20');
+parseInt('30');
+count; // 3
+```
+
+##高阶函数
+一个函数的参数为另一个函数  即高阶函数
+```
+function add(x, y, f) {
+    return f(x) + f(y);
+}
+add(-5,6,Math.abs)  //11
+
+计算过程如下：
+x = -5;
+y = 6;
+f = Math.abs;
+f(x) + f(y) ==> Math.abs(-5) + Math.abs(6) ==> 11;
+return 11;
+```
+
+##Array中的Map方法
+- 调用Array的Map()方法，传入自定义函数，就可以得到一个新的Array作为结果，
+作用是处理Array，并返回一个`Array`
+```
+function pow(x) {
+    return x * x;
+}
+
+var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+arr.map(pow); // [1, 4, 9, 16, 25, 36, 49, 64, 81]
+```
+
+- 还可以把Array中的数字转换为字符串
+```
+var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+arr.map(String); // ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+```
+
+
+##Array中的reduce方法
+- Array中的reduce方法把一个函数作用于Array的元素上，传入reduce的函数必须接受两个参数，
+然后，reduce()把结果继续和Array中的下一个元素做累积计算，效果为：
+> [x1, x2, x3, x4].reduce(f) = f(f(f(x1, x2), x3), x4)
+作用是处理Array中的元素，然后返回一个结果
+例如对一个Array求和
+```
+var arr = [1, 3, 5, 7, 9];
+arr.reduce(function (x, y) {
+    return x + y;
+}); // 25
+
+
+##把[1,3,5,7,9]转换成整数 13579
+var arr = [1, 3, 5, 7, 9];
+arr.reduce(function (x, y) {
+    return x*10 + y;
+}); // 13579
+```
+
+- 把字符串转为int   先把字符串13579，转换为Array(1,3,5,7,9,),然后在转换为数字13579
+```
+'use strict';
+
+function string2int(s) {
+    return s.split('')
+      .map(function(x){ return x.charCodeAt(0) - '0'.charCodeAt(0);})
+      .reduce(function(x, y){ return x*10+y; });
+}
+
+// 测试:
+if (string2int('0') === 0 && string2int('12345') === 12345 && string2int('12300') === 12300) {
+    if (string2int.toString().indexOf('parseInt') !== -1) {
+        alert('请勿使用parseInt()!');
+    } else if (string2int.toString().indexOf('Number') !== -1) {
+        alert('请勿使用Number()!');
+    } else {
+        alert('测试通过!');
+    }
+}
+else {
+    alert('测试失败!');
+}
+```
+
+##Array中的filter方法
+- filter也接受一个函数，把传入的函数依次作用于Array中每个元素，然后根据返回值是true还是false,
+决定保留还是舍弃元素，功能是从Array中筛选出一些元素，并返回。
+
+1. 在一个Array中，删掉偶数，只保留奇数，可以这么写：
+```
+var arr = [1, 2, 4, 5, 6, 9, 10, 15];
+arr.filter(function (x){ 
+    return x%2!=0;
+    })  //[1,5,9,15]
+
+```
+
+2. 把一个Array中的空字符串删掉，可以这么写：
+```
+var arr = ['A', '', 'B', null, undefined, 'C', '  '];
+arr.filter(function (s) {
+    return s && s.trim(); // 注意：IE9以下的版本没有trim()方法
+}); // ['A', 'B', 'C']
 ```
