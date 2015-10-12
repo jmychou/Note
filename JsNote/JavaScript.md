@@ -68,6 +68,17 @@ javaScript在设计时，有两种比较运算符：
 例如
 false==0  //true 
 false====0 //false
+
+`!!` 一般用来将后面的表达式转换为布尔型的数据（boolean）
+1. var abc="true";
+typeof(!! abc);   //boolean
+
+2. var tt={flag:true};
+  var test=!!tt.flag;
+
+  等价于test=tt.flag || false 
+  即如果tt设置了flag的值，如果flag的值不是(null、undefined、0、"") ,则test的值就为true
+  而如果没有flag这个属性，或是以上各值，test就为false。
 ```
 
 ## NaN这个特殊的Number与其他值都不相等，包括它自己
@@ -709,7 +720,7 @@ tt();   //得到也是NaN
 
 - 要保证this指向正确，必须用`obj.xxx()`的形式调用。
 
-- 在函数内部重构函，也会才出错
+- 在函数内部重构函数，也会出错
 ```
 'use strict';
 
@@ -902,3 +913,6 @@ arr.filter(function (s) {
     return s && s.trim(); // 注意：IE9以下的版本没有trim()方法
 }); // ['A', 'B', 'C']
 ```
+
+--- 
+
