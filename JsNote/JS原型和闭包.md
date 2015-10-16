@@ -118,7 +118,7 @@ var f2=function () {};
 
 - this的几种情况
 
-1. 构造函数
+1. 构造函数                                                                                  
 this就代表new出来的对象
 
 ```
@@ -249,3 +249,31 @@ obj.fn();
 
 ---
 
+##JS面向对象
+**JS通过闭包来完成面向对象的私有属性和封装。**
+```
+function Girl(name,bf){ 
+    var secrect =bf;
+    this.name=name;
+ 
+    //通过showlove做接口，来读取私有属性secrect
+    this.showlove=function(){ 
+        retrurn secrect;
+    }
+
+    //改变私有属性
+
+    this.movelove=function(){ 
+        secrect="xiaowang";
+    }
+}
+
+var girl =new Girl('hanmeimei','jim');
+
+console.log(girl.showlove())    //输出私有属性的值， jim
+
+girl.movelove() ;  //改变私有属性
+
+
+console.log(girl.showlove())    //输出改变后的私有属性的值， xiaowang
+```
