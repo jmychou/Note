@@ -250,6 +250,18 @@ obj.fn();
 ---
 
 ##JS面向对象
+- JavaScript实际上在使用new时,执行了下列三个过程:
+
+* 创建空对象;
+* 将类的prototype中的属性和方法复制到实例中;
+* 将第一步创建的空对象做为类的参数调用类的构造函数.
+
+---
+- 构造函数中直接定义的属性等同于直接定义了对象的属性，可以用obj.hasOwnProperty('属性名')检测到
+而通过函数原型(prototype)定义的属性是挂载在原型上的，不属于对象，所以obj.hasOwnProperty('属性名')返回false
+
+---
+
 **JS通过闭包来完成面向对象的私有属性和封装。**
 ```
 function Girl(name,bf){ 
@@ -276,4 +288,205 @@ girl.movelove() ;  //改变私有属性
 
 
 console.log(girl.showlove())    //输出改变后的私有属性的值， xiaowang
+```
+
+- 构造函数的原型指向 其他构造函数创建的某个具体的对象 来创建自己对象，实现继承
+```
+//此构造函数用来创建老虎对象
+function Tiger(){
+    this.huck=function(){
+        console.log("I'm tiger");
+    }
+}
+
+var tiger=new Tiger();
+##此时老虎并没有猫的属性，所以可以通过原型继承实现老虎有猫的属性
+即：对Tiger()函数指定，用某个具体的"cat对象" 作为老虎的原型，并创建"老虎对象"
+
+function Cat(){ 
+    this.climb=function(){ 
+            console.log("我会爬树")；
+        }
+}
+
+//开始继承
+
+Tiger.prototype=new Cat();
+var huhu=new Tiger();
+
+
+huhu.climb(); //实现了继承， 输出 我会爬树
+
+huhu.__proto__ 指向其原型对象----Tiger.prototype(即Cat对象)
+```
+
+**原型**
+```
+console.log(Cat.prototype);  //空对象，显示为Cat{};
+console.log(Cat.prototype.constructror);  //因为原型对象的constructror指向Cat,所以显示为Cat()函数。
+
+
+console.log(Cat.prototype.__proto__);  //Object{}
+console.log(Cat.prototype.__proto__.__proto__); //null
+```
+
+##对象冒充和复制继承   也可实现继承
+- 对象冒充
+```
+function Cat(leg,tail){ 
+    this.leg=leg;
+    this.tail=tail;
+
+    this.climb=function() { 
+        console.log("我会爬树");
+    }
+}
+
+function Tiger(leg,tail,color) { 
+    this.parent=Cat;   //把父类构造函数引入到一个属性上
+    this.parent.apply(this,argumetns);
+    
+    delete this.parent;  //此时改属性已没用了
+
+    this.color=color;
+        
+}
+
+//上述实际是将Cat函数放进了Tiger函数中执行，即：
+
+function Tiger(leg,tail,color) { 
+    this.parent=Cat;   
+    
+     this.leg=leg;
+     this.tail=tail;
+
+    this.climb=function() { 
+        console.log("我会爬树");
+    }
+    
+    delete this.parent;  
+
+    this.color=color;
+        
+}
+
+var tiger=new Tiger(4,1,'yellow'); 
+tiger.climb();   //此时climb() 可以执行，并且tiger本身拥有climb() 方法，(通过原型继承的话，并不拥有)
+
+##分析过程
+在用Tiger() 制造对象前，用Tiger语句影响一个空对象，而在此过程中，先有Cat函数实施影响，
+所以最终得到的对象，是由Cat和Tiger两者共同作用的对象。
+```
+
+- 复制继承 
+```
+//复制继承，就是把父对象的所有属性，直接复制到自己对象上
+function Cat(leg,tail){ 
+    this.leg=leg;
+    this.tail=tail;
+
+    this.climb=function() { 
+        console.log("我会爬树");
+    }
+}
+
+function Tiger(color) { 
+    this.color=color;
+
+    this.extend=function() { 
+        for(var key in parent) { 
+            this[key]=parent[key];
+        }
+    }
+}
+
+var tiger=new Tiger('yellow') ;
+tiger.extend(new Cat(4,1));
+tiger.climb();    //此时tiger拥有了Cat的所有属性。
+
+
+```
+
+##JS多态
+```
+function a() { 
+    this.buck=function() { 
+        consol.log("aa") ;
+    }
+ }
+
+ function b() { 
+    this.buck=function() { 
+        consol.log("bb") ;
+    }
+ }
+
+ function test(tt) { 
+    tt.buck();
+ }
+
+ var aa=new a();
+ var bb=new b() ;
+
+ test(aa);   //aa
+ test(bb);   //bb
+
+ ##Js 中因为不存在类型检测，所以不是严格意义上的多态
+ ```
+
+##JS静态方法
+```
+function test(color) { 
+    this.color=color;
+}
+
+
+test.yy=function() { 
+    console.log("static method") ;   //此时就为test的静态方法
+}
+
+//
+1. yy() 方法是属于"函数"本身的，因为函数也是对象，并且和它自己创建的对象没有关系
+2. yy() 要调用，不需要new对象，直接用函数来调用
+
+//
+1. Math.random()  就是静态方法
+2. $.ajax()   也是静态方法
+3. 编写jQuery插件
+   3.1 通过闭包，把方法写到jQuery的原型上，(稍复杂)
+   3.2 直接增加 $ 对象的静态方法 ，例如
+     
+      $.sing=function() { 
+            alert("haha");
+      }
+
+      $.sing() ;//会直接执行
+   
+
+```
+
+##混合模式实现继承
+- 创建类时，用构造函数定义属性，使用原型方式定义方法
+- 继承时，使用对象冒充方式来继承构造函数的属性，用原型链继承来继承方法
+```
+function ClassA(color){ 
+    this.color=color;      //定义属性
+} 
+ClassA.prototype.getColor=function() { 
+        return this.color;       //定义方法
+} 
+
+function ClassB(color,area){ 
+    ClassA.call(this,color) ;   //对象冒充 来继承属性
+    this.area=area;            
+}
+
+ClassB.prototype=new ClassA() ;   //原型继承来继承方法
+ClassB.prototype.getArea=function() { 
+        return this.area;
+}
+
+var b=new ClassB('red',100);
+
+b.getColor();
 ```
