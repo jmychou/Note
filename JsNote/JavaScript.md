@@ -24,6 +24,16 @@ str3 = new String("javascript")
 "object"
 ```
 
+- 当字符串对象与基本类型的string比较的时候，是按值比较，而与字符串对象比较的话，按引用比较
+```
+var s = new String('hello world');
+var s1 = new String('hello world');
+var s2 = String('hello world');
+
+console.log( s == s2 );    //true
+console.log( s == s1 );    //false
+```
+
 - javascript会在合适的时候自动把基本类型的string转为对象类型的string，也就是说我们可以对基本类型string使用String.prototype中的方法。这两者也可以进行显式转化。
 ```
 // 基本类型----->对象类型
@@ -47,7 +57,25 @@ var s2=new String("2+2");
 eval(s2)   //[String : "2+2"]    返回的还是对象
 ```
 
+## && 与 ||
+- && 如果&&左侧的表达式为真值，则返回右侧表达式的值，否则返回左侧表达式的值
+```
+var i="" && 1;     //""
+i=1 && 2;    //2
+i=1 && "" ;   //""
 
+i=0 && "";    //0
+```
+
+- ||  如果||左侧表达式为真值，则返回左侧表达式的值，否则返回右侧表达式的值
+```
+var i="" || 1;   //1 
+i=1 || 2；;     //1 
+i=1 || "";       //1 
+
+i=0 ||"" ;      //""
+
+```
 
 1. Number js不区分整数和浮点数，统一用Number表示，特殊的Number类型
 - NaN  //NaN表示Not a Number ，当无法计算结果时用NaN表示
