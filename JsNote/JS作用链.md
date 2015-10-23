@@ -439,6 +439,60 @@ var arrs = [a(10), b(20), a(10)];
 console.log(arrs);  // [20,40,21]    //每次foo中返回的函数，会和形参的最新的值(组成最新的环境返回)
 ```
 
+**闭包调用，每次调用都会返回一个新函数，即使传入相同的参数**
+```
+function lazy_sum(arr){ 
+    
+    var sum=function() { 
+        return arr.reduce(function(x,y){ 
+                return x+y;
+            });
+    }
+
+    return sum;
+}
+
+var f1=lazy_sum([1,2,3,4,5]);
+var f2=lazy_sum([1,2,3,4,5]);
+
+console.log(f1===f2);  //false
+
+```
+
+**闭包中的返回函数，不要引用任何循环变量，或者后续会发生变化的量**
+```
+function count() {
+    var arr = [];
+    for (var i=1; i<=3; i++) {
+        arr.push(function () {
+            return i * i;
+        });
+    }
+    return arr;
+}
+
+var results = count();
+var f1 = results[0];
+var f2 = results[1];
+var f3 = results[2]; 
+
+上述返回结果都是16 ，所以需要改进
+
+//用函数参数绑定需要循环变化的变量的当前值
+function count() {
+    var arr = [];
+    for (var i=1; i<=3; i++) {
+        arr.push((function (n) {
+            return function () {
+                return n * n;
+            }
+        })(i));
+    }
+    return arr;
+}
+
+```
+
 **函数的作用域，取决于声明时，而不取决于调用时。**
 
 - 闭包计数器
