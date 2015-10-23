@@ -108,10 +108,78 @@ var f2=function () {};
 函数声明类似于第二种情况，而函数表达式类似于第二种情况，就如对待`var a=10;` 只会声明提前，而不会赋值。
 ```
 
+---
+>当用函数表达式声明函数时，有匿名函数表达式(var a=function(){}) ;和具名函数表达式(var a= function foo(){}); 
+当用具名函数表达式时，此函数内部会产生一个对象，这个对象只有一个属性，属性名为该函数名，并且此属性只能在该函数内部使用，外部访问不到，并且是只读的。
+
+- 例1
+```
+var bar=function foo(){ 
+    consoloe.log(typeof foo);   
+}
+
+bar();   //function 
+console.log(typeof foo))  //undefined
+
+```
+
+- 例2
+```
+b = c;
+
+b();
+console.log(a);    //1
+console.log(b);    //2
+console.log(c);    //3
+
+function c() {
+    a = 1, b = 2, c = 3;
+};
+
+// 声明提前
+b=c   //这时不用 `var` 声明的 `b` 是全局属性，值为 `c` 函数
+b()   //执行b函数
+// 此时 `a` 为全局属性，值为1 
+// `b` 原来为函数，此时为 `b` 赋值，值为 2 (弱类型)
+// `c` 原来为函数，此时为 `c` 赋值，值为 3 (同上)
+
+____________
+
+##稍作修改:
+
+b = function c() {
+    a = 1, b = 2, c = 3;
+};
+
+b();
+console.log(a);    //1
+console.log(b);    //2
+console.log(c);    //Uncaught ReferenceError: c is not defined
+
+// b 执行的时候，a 为全局属性， b 为全局属性，c是对自身函数的引用，然而不能对 c 进行修改
+
+---------------------
+##再次修改:
+
+b = function c() {
+    a = 1, b = 2, c = 3;
+    console.log(a);    //1
+    console.log(b);    //2
+    console.log(c);    //fuction c(){...
+};
+b();
+
+```
+
+---
+
 **以上三种情况，就是执行上下文。**
 1. 变量、函数表达式  -----声明提前，默认值为undefined
 2. this  ----- 赋值
 3. 函数声明 -----赋值
+
+##预解析
+- 如果遇到函数声明和变量var声明相同的时候，则只保留函数，如果都是函数，则自下向上覆盖
 
 #this
 **每次调用函数，就会产生一个上下文环境，而this的取值是是执行上下文环境的一部分，this取什么值，是在函数调用的时候确定的，而不是函数定义的时候确定的，所以this指向调用该函数的对象**
