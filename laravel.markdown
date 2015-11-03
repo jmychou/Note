@@ -1,3 +1,9 @@
+#MVC
+1. 注册路由
+2. 创建控制器
+3. 控制器中添加方法，从数据库中取数据，传递到视图
+4. 在视图中显示数据
+
 ##路由
 1. Route::get('/','WelcomeController@index')
 - Route()声明一个路由
@@ -38,7 +44,7 @@ return view('page.about',$data);
 ```
 $name='jmy';
 $age=22;
-return view('page.about',compact('first','second'));
+return view('page.about',compact('name','age'));  //compact的字符串就是变量名字
 ```
 
 ##Blade  模版
@@ -46,6 +52,10 @@ return view('page.about',compact('first','second'));
 其他视图开始使用 `@extends('模版名')` 表示使用该模版，
 然后 @section('xxx') *** @stop 中间的内容将被填充到@yield('xxx')的位置。
 
+- 常用的blade语句
+1. @if...@else...@endif
+2. @unless()  相当于if not
+3. @foreach...@endforeach
 
 ## 维护模式
 当你要更新或维护网站时，「关闭」整个网站是很简单的。如果应用程序处于维护模式，HttpException 会抛出 503 的状态码。
@@ -63,6 +73,29 @@ return view('page.about',compact('first','second'));
 
 - php  artisan make:migration create_user_table   --create==users   //创建user表，    create_user_table 为文件名  
 - php artisan make:migration  add_xx_to_users_table  --table=users   //修改user表，给users表添加一个字段
+
+- 此时会在迁移文件中，创建两个方法，up()和down(),up方法是执行php artisan migrate
+时调用的，即创建数据表，而down()方法是执行php artisan migrate:rollback时调用，
+即会删除数据表
+```
+ public function up()
+    {
+        Schema::create('articles', function (Blueprint $table) {
+            $table->increments('id');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('articles');
+    }
+```
 
 
 2. 创建迁移文件完成后，用 `php artisan migrate` 执行所有迁移文件，此时数据库中就会出现要创建的表
@@ -87,4 +120,54 @@ php artisan migrate:refresh
 php artisan migrate:refresh --seed
 ```
 
-3. <del>test,hahha</del>
+##Model
+- Model文件位于app/ 根目录下
+- Mode命名,数据表复数而model单数大写
+```
+如果说我们有一个articles数据表，我们的model相对应就命名为Article；
+
+如果说我们有一个users的数据表，我们的model对应就命名为User；
+```
+
+###tinker
+- $article= new App\Acticle; 相当于实例化了一个Article类，然后就可以设置
+$article的各个字段，$article->id=xxx;
+- $article->save() 向数据库中插入一条数据
+- 更新 $article->update(['id'=> 2]);(要现在model中设置$fillable)
+- 删除，$article = App\Article::find(2); $article->delete();
+
+1. all()方法会返回Article的所有记录
+```
+App\Article::all();
+```
+
+2. find() 方法介绍一个参数$id，或者为数组
+```
+1. 查找id为1的一条记录
+$article=App\Article::find(1);
+
+2. 传入数组，可以查询多条记录
+$article=App\Article::find([1,2]);
+```
+
+3. toArray() 将一个Eloquent对象转换为数组
+```
+$article= App\Article::find(1)->toArray();
+```
+
+4. toJson()  将一个Eloquent对象转换为JSON
+```
+$article= App\Article::find(1)->toJson();
+```
+
+5. where() 方法，条件查询
+```
+$article=App\App\Article::where('title','=','xxx')->get();
+此时返回的是一个Eloquent\Collection结果集，如果只需要第一天记录
+$article=App\App\Article::where('title','=','xxx')->first();
+```
+
+6. destory() 删除数据，介绍一个$id或者一个数组$id
+```
+App\Article::destory(3);
+```
