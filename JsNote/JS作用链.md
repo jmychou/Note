@@ -399,6 +399,10 @@ console.log(pig);
 1. fn()函数中的this指向 对象obj
 2. 运行fn(参数1，参数2...参数N)
 
+- 函数执行就相当于调用call
+即：functionName(parm) 等价于 functionName.call(obj,parm); 其中的obj即决定了函数的this
+
+> 1. foo() ---> foo.call(window) 2. obj.foo() --> obj.foo.call(obj)
 
 **每个函数都有自己独有的arguments和this,且不进行链式查找。**
 

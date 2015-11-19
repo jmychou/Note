@@ -77,6 +77,16 @@ i=0 ||"" ;      //""
 
 ```
 
+- && 优先级高于 ||
+```
+alert((1 && 3 || 0) && 4); //结果4 ①
+alert(1 && 3 || 0 && 4); //结果3 ②
+alert(0 && 3 || 1 && 4); //结果4 ③
+分析：
+语句①：1&&3 返回3 => 3 || 0 返回 3 => 3&&4 返回 4
+语句②：先执行1&&3 返回3，在执行0&&4返回0，最后执行结果比较 3||0 返回 3
+语句③：先执行0&&3 返回0，在执行1&&4返回4，最后执行结果比较 0||4 返回 4
+```
 1. Number js不区分整数和浮点数，统一用Number表示，特殊的Number类型
 - NaN  //NaN表示Not a Number ，当无法计算结果时用NaN表示
 - Infinity   //Infinity 表示无限大，当数值超过了JavaScript的Number所能表示的最大值时，就表示为Infinity
@@ -243,10 +253,9 @@ s.indexOf('world'); // 返回7
 s.indexOf('World'); // 没有找到指定的子串，返回-1
 ```
 
+5. 
 - substr (start[,length])方法返回一个从指定位置开始的指定`长度`的子字符串。
 如果 length 为 0 或负数，将返回一个空字符串。如果没有指定该参数，则子字符串将延续到字符串的最后。
-
-
 
 - substring()返回指定索引区间的子串：
 substring 方法使用 start 和 end 两者中的较小值作为子字符串的起始点。例如，substring(0, 3) 和substring(3, 0) 将返回相同的子字符串。如果 start 或 end 为 NaN 或者负数，那么将其替换为0。
@@ -256,6 +265,13 @@ var s = 'hello, world'
 s.substring(0, 5); // 从索引0开始到5（不包括5），返回'hello'
 s.substring(7); // 从索引7开始到结束，返回'world'
 ```
+
+- slice 它接收两个参数，第一个参数是要截取的位置索引，第二参数可选，表示要截取到的结束位置，但是不包括结束位置
+
+- 当传入方法的参数为负数时：
+1. slice()像上面说的，是负数加上字符串的长度得出相应的正值；
+2. substring()方法的参数均置为零；
+3. substr()方法的第一个参数为负值加上字符串长度得到的正值，第二个参数置为零。
 
 #数组
 - 两种方式定义数组
@@ -319,7 +335,9 @@ aCopy; // ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 aCopy === arr; // false
 ```
 
-- 如果slice(start,end)，end超过数组长度，会截取到数组最后一个元素，end为-1的话，为最后一个元素
+- 如果slice(start,end)，end超过数组长度，会截取到数组最后一个元素，
+- 当参数为负数的时候，将参数和数组或字符串的长度相加得到的正数作为实际的参数。end为-1的话，为最后一个元素
+
 ```
 var arr = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 arr.slice(5,9)   //["F", "G"]
@@ -327,7 +345,42 @@ arr.slice(-2,-1)  //['F']
 
 arr.slice(1)    //["B", "C", "D", "E", "F", "G"]
 arr.slice(-1)   //["G"]
+
+[1,2,3,4,5,6].slice(2,4);
+[1,2,3,4,5,6].slice(-4,-2);    //结果均为[3,4]
 ```
+
+**Array.prototype.slice.call(arguments)能将具有length属性的 (非常像数组) 对象转成数组**
+- slicen内部实现简化
+```
+function slice(start,end){ 
+    var len=ToUnit32(this.length),
+        result=[];
+
+    start= start || 0;
+    end =end || this.length;   // 当调用call时，会改变this的指向
+
+    for(var i=start;i<end;++i){ 
+        result.push[this[i]];
+    }
+    return result;
+}
+
+//slice不需要this为Array类型，只需要有length属性即可，并且length属性可以不为number类型
+当不能转换为数值时，ToUnit32(this.length)返回0
+——————————————————————————————————————
+var a={length:2,0:'first',1:'second'};
+Array.prototype.slice.call(a);// ["first", "second"]
+var a={length:2};
+Array.prototype.slice.call(a);// [undefined, undefined]
+
+------------------
+var slice = Array.prototype.slice; 
+alert(slice.call({0: 'foo', length: 'bar'})[0]);    //undefined 
+alert(slice.call(NaN).length);       //0
+alert(slice.call({0: 'foo', length: '100'})[0]);  //foo 
+```
+
 
 3. push() 和 pop()
 push()想Array的尾部添加若干元素，pop()则把Array的最后一个元素删除掉
@@ -341,6 +394,15 @@ arr.pop(); arr.pop(); arr.pop(); // 连续pop 3次
 arr; // []
 arr.pop(); // 空数组继续pop不会报错，而是返回undefined
 arr; // []
+```
+
+> 不生成新数组的情况下，连接两个数组
+```
+var arr1=[1,2,3],
+    arr2=[4,5,6];
+Array.prototype.push.apply(arr1,arr2);
+
+console.log(arr1);    //[1,2,3,4,5,6]
 ```
 
 4. unshift() 和shift()
@@ -432,7 +494,7 @@ var arr = ['A', 'B', 'C'];
 arr.concat(1, 2, [3, 4]); // ['A', 'B', 'C', 1, 2, 3, 4]
 ```
 
-9. join 把当前Array的每个元素都用指定的字符串连接起来，然后返回连接后的字符串：
+9. join 把当前Array的每个元素都用指定的字符串连接起来，然后返回连接后的字符串(和toString类似)：
 如果不指定分隔符，默认为逗号（，）
 ```
 var arr = ['A', 'B', 'C', 1, 2, 3];
