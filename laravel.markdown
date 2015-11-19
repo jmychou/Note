@@ -9,6 +9,7 @@
 - Route()声明一个路由
 - get 定义一个get路由，此外还有post,put,delete 
 - WelcomeController@index : 前面位控制器，后面是调用控制器中的方法
+- 第二个参数也可以是一个匿名函数Route::get('/',function(){rerurn view('welcome')};)
 
 ##控制器
 可以使用php artisan 命令创建 ，帮助可以用 php artisan 或者php artisan help
@@ -52,6 +53,33 @@ return view('page.about',compact('name','age'));  //compact的字符串就是变
 其他视图开始使用 `@extends('模版名')` 表示使用该模版，
 然后 @section('xxx') *** @stop 中间的内容将被填充到@yield('xxx')的位置。
 
+- 父模板中也可以定义一些公用的片段，然后子模板通过`@parent`调用
+```
+//父模板
+<!DOCTYPE html>
+<html>
+<body>
+    @section('sidebar')
+    This is the master sidebar.
+    @show
+
+    @yield('content')
+
+    @section('footer')
+        This is the master footer.        
+    @show
+</body>
+</html>
+
+//子模板
+
+@extends('')
+@section('sidebar')
+     @parent
+     <p>This is appended to the master sidebar.</p>
+@stop
+```
+
 - 常用的blade语句
 1. @if...@else...@endif
 2. @unless()  相当于if not
@@ -93,7 +121,14 @@ return view('page.about',compact('name','age'));  //compact的字符串就是变
      */
     public function down()
     {
+        //删除表
         Schema::drop('articles');
+
+        //删除某个字段
+        Schema::drop('articles',function(Blueprint $table){ 
+
+              $table->dropColumn('字段名')；
+            });
     }
 ```
 
