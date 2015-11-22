@@ -10,6 +10,8 @@
 - get 定义一个get路由，此外还有post,put,delete 
 - WelcomeController@index : 前面位控制器，后面是调用控制器中的方法
 - 第二个参数也可以是一个匿名函数Route::get('/',function(){rerurn view('welcome')};)
+- php artisan route:list 会列出所有的路由
+- Route::resources('articles',ArticleController);  会生成相应控制器的所有路由
 
 ##控制器
 可以使用php artisan 命令创建 ，帮助可以用 php artisan 或者php artisan help
@@ -84,6 +86,7 @@ return view('page.about',compact('name','age'));  //compact的字符串就是变
 1. @if...@else...@endif
 2. @unless()  相当于if not
 3. @foreach...@endforeach
+4.打印变量 {{ dump($name) }} 
 
 ## 维护模式
 当你要更新或维护网站时，「关闭」整个网站是很简单的。如果应用程序处于维护模式，HttpException 会抛出 503 的状态码。
@@ -176,6 +179,12 @@ $article的各个字段，$article->id=xxx;
 App\Article::all();
 ```
 
+- create()方法会自动把数据插入数据库，不需要save()方法(需要在$fillable中设置要填充的字段，否则会报MassAssigmentException异常)
+```
+ $article = App\Article::create(['title' => 'New Title', 'body' => 'New body', 'published_at' => Carbon\Carbon::now()]);
+```
+
+
 2. find() 方法介绍一个参数$id，或者为数组
 ```
 1. 查找id为1的一条记录
@@ -199,6 +208,8 @@ $article= App\Article::find(1)->toJson();
 ```
 $article=App\App\Article::where('title','=','xxx')->get();
 此时返回的是一个Eloquent\Collection结果集，如果只需要第一天记录
+
+//此方法返回一个普通的Article类
 $article=App\App\Article::where('title','=','xxx')->first();
 ```
 
@@ -206,3 +217,16 @@ $article=App\App\Article::where('title','=','xxx')->first();
 ```
 App\Article::destory(3);
 ```
+
+
+##Carbon
+
+
+
+
+
+
+
+
+
+
