@@ -221,8 +221,11 @@ App\Article::destory(3);
 
 ##Carbon
 
+##Laravel 中 `\` 和 `use Illuminate\Support\Facades\`  作用相同
 
-
+- 查看程序执行的调用栈
+1. debug_print_backtrace // 直接打印调用栈
+2. debug_backtrace   //不会直接打印，而是把要打印的内容返回给一个字符串，然后可以再输出
 
 
 
