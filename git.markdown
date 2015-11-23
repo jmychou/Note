@@ -16,7 +16,18 @@ git merge future ，则future中修改过的地方就被合并到master分支中
 
 上述流程即为 ： 建立一个分支，合并到主分支，然后删除新建的分支
 
+##远程和本地都有更新，消除冲突
+1. 先将本地的更新暂存起来
+```
+git stash
+git pull
+git stash pop
+```
 
-
+2. 撤销本地的更新
+```
+git reset --hard 
+git pull origin master
+```
 
 
