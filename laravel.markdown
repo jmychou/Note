@@ -227,9 +227,19 @@ App\Article::destory(3);
 1. debug_print_backtrace // 直接打印调用栈
 2. debug_backtrace   //不会直接打印，而是把要打印的内容返回给一个字符串，然后可以再输出
 
+- dd()
+```
+dd();
+等同于
+var_dump();
+die();
+```
 
-
-
-
+##Laravel初始化
+1. 初始化$app对象，容器
+2. 创建$kernel 对象，负责处理http请求
+3. $kernel->handle(); 处理请求 
+4. $app->bootstrapWith($kernel->$bootstraper) ,注册facades,注册配置文件中的providers,
+初始化完毕，$app->boot()启动
 
 
