@@ -238,8 +238,12 @@ die();
 ##Laravel初始化
 1. 初始化$app对象，容器
 2. 创建$kernel 对象，负责处理http请求
-3. $kernel->handle(); 处理请求 
-4. $app->bootstrapWith($kernel->$bootstraper) ,注册facades,注册配置文件中的providers,
-初始化完毕，$app->boot()启动
+3. $kernel->handle(); 在handle()内部调用bootstrap()处理请求 
+4. $app->bootstrapWith($kernel->$bootstraper) ,注册facades,调用RegisterFacades类中的
+ bootstrap()方法；调用AliasLoader中注册的自动加载初始化，它使用了在app.php中配置的 
+ `aliases`数组，从而通过这个别名， 可以找到对应的真实的类存在的文件，完成对象的实例化，注册
+ Facades自动加载_autoload()的实现方法，以AliasLoader类中的load()方法，返回指定的Facades实例
+注册配置文件中的providers
+5. 初始化完毕，$app->boot()启动
 
 
