@@ -55,7 +55,18 @@ return view('page.about',compact('name','age'));  //compact的字符串就是变
 其他视图开始使用 `@extends('模版名')` 表示使用该模版，
 然后 @section('xxx') *** @stop 中间的内容将被填充到@yield('xxx')的位置。
 
-- 父模板中也可以定义一些公用的片段，然后子模板通过`@parent`调用
+- @yield($name,$default) 的意思是，如果子模板中没有@section('xxx')这块内容，则会显示默认内容，否则就显示子模板中的内容
+
+- 与@section结合的@stop,@show的区别
+1. 父模板中使用`@show` ,然后在子模板中使用`@stop`，  如果在父模板中使用了@stop，则子模板使用这块的时候，子模板中的内容不会被显示，
+而如果子模板中使用@show来继承父模板，则子模板中的内容会显示两次
+
+- @append 和@override
+1. 如果在子模板中多次使用一个@section()区域，可以使用`@append`,多次使用此区域，然后可以用`@stop`结束使用，
+2. 而如果在多次使用一个区域的时候，最后使用`@override`，则此前定义的都会被覆盖，只会显示`@section()...@override`这次的内容
+3. 所以在对一个数据进行遍历输出时，可以使用`@append`,而如果遍历某处发现出错了，则可以使用`@override`
+
+- 父模板中也可以定义一些公用的片段，然后子模板通过`@parent`调用（@section也可以预定义可替换的内容(在父视图中使用)）
 ```
 //父模板
 <!DOCTYPE html>
@@ -253,5 +264,41 @@ die();
  Facades自动加载_autoload()的实现方法，以AliasLoader类中的load()方法，返回指定的Facades实例
 注册配置文件中的providers
 5. 初始化完毕，$app->boot()启动
+
+##Session
+Laravel的Session没有使用PHP的Session,而是自己的Session(详细见文档，只列出一些方法)
+- 设置Session
+1. Session::set('key','value');
+2. Session::put('key','value');
+3. Session::push('array','value');   //将Session存入一个数组中
+
+- 获取Session
+1. Session::get('key','default');   //获取Session的值，如果没有的话，则取默认值'defalut'
+2. Session::pull('key','default');  //获取Session值，并删除，如果没有的话，则取默认值'defalut'
+
+- 获取所有Session
+Session::all()
+
+- 检测某个Session是否存在
+Session::has('key')
+
+- 移除某个Session值
+Session::forget('key')
+
+- 清空整个Session
+Session::flush()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
