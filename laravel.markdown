@@ -86,7 +86,15 @@ return view('page.about',compact('name','age'));  //compact的字符串就是变
 1. @if...@else...@endif
 2. @unless()  相当于if not
 3. @foreach...@endforeach
-4.打印变量 {{ dump($name) }} 
+4. 打印变量 {{ dump($name) }} 
+5. 在视图中可以使用`$errors`来判断是否有错误
+```
+@if($errors->any())
+    @foreach($errors->all() as $error)
+        <li>{{ $error }}</li>
+    @endforeach
+@endif
+```
 
 ## 维护模式
 当你要更新或维护网站时，「关闭」整个网站是很简单的。如果应用程序处于维护模式，HttpException 会抛出 503 的状态码。
